@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Engilla</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --primary-color: #bb86fc;
+            --secondary-color: #03dac6;
+            --oil-color: #FFD700;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            color: var(--primary-color);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
+            font-size: 1.1em;
+            margin: 10px;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .oil-container {
+            position: relative;
+            width: 150px;
+            height: 200px;
+        }
+
+        .oil {
+            fill: var(--oil-color);
+            animation: pour 2s infinite;
+        }
+
+        @keyframes pour {
+            0% {
+                transform: translateY(-100px) scaleY(0);
+                transform-origin: top;
+                opacity: 0;
+            }
+            50% {
+                transform: translateY(0) scaleY(1);
+                transform-origin: top;
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100px) scaleY(0);
+                transform-origin: bottom;
+                opacity: 0;
+            }
+        }
+
+        #countdown {
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+
+        #subscription-info {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Engilla</h1>
+        <p>Your ultimate car engine oil recommendation app.</p>
+        <button onclick="startFreeTrial()">Start 7-Day Free Trial</button>
+        <button onclick="showSubscriptionInfo()">Subscribe</button>
+        <div id="countdown"></div>
+        <div id="subscription-info">
+            <h2>Subscribe to Engilla</h2>
+            <p>Choose your subscription plan:</p>
+            <button onclick="subscribe('monthly')">Monthly Plan - $9.99</button>
+            <button onclick="subscribe('yearly')">Yearly Plan - $99.99</button>
+        </div>
+    </div>
+    <div class="oil-container">
+        <svg width="150" height="200" viewBox="0 0 150 200">
+            <rect x="50" y="30" width="50" height="70" fill="#999" />
+            <rect x="60" y="10" width="30" height="20" fill="#666" />
+            <path d="M60 30 Q75 50 90 30" fill="#999" />
+            <path class="oil" d="M75 100 Q70 120 75 140 Q80 160 75 180 Q70 200 75 220" />
+        </svg>
+    </div>
+
+    <script>
+        let trialEndDate = localStorage.getItem('trialEndDate');
+        let subscribed = localStorage.getItem('subscribed') === 'true';
+
+        function startFreeTrial() {
+            if (!trialEndDate && !subscribed) {
+                const now = new Date();
+                trialEndDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+                localStorage.setItem('trialEndDate', trialEndDate);
+                updateCountdown();
+                window.location.href = '/index';
+            } else if (subscribed) {
+                window.location.href = '/index';
+            } else {
+                alert('Your free trial has expired. Please subscribe to continue using Engilla.');
+            }
+        }
+
+        function updateCountdown() {
+            if (trialEndDate) {
+                const now = new Date();
+                const timeLeft = new Date(trialEndDate) - now;
+                if (timeLeft > 0) {
+                    const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    document.getElementById('countdown').innerText = `${daysLeft} days left in your free trial`;
+                } else {
+                    document.getElementById('countdown').innerText = 'Your free trial has expired';
+                    localStorage.removeItem('trialEndDate');
+                }
+            }
+        }
+
+        function showSubscriptionInfo() {
+            document.getElementById('subscription-info').style.display = 'block';
+        }
+
+        function subscribe(plan) {
+            // Here you would integrate with your payment gateway
+            // For this example, we'll just set the subscribed flag
+            alert(`Thank you for subscribing to the ${plan} plan!`);
+            localStorage.setItem('subscribed', 'true');
+            subscribed = true;
+            window.location.href = '/index';
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000 * 60 * 60); // Update every hour
+    </script>
+</body>
+</html>
